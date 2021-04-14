@@ -1,10 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, version } from 'react';
 import { StyleSheet, Text, View,TextInput,Button, Alert } from 'react-native';
-import * as firebase from 'firebase';
+import firebase from 'firebase/app';
 import Header from './components/Header';
 import Redirect from 'react-dom';
-import googlesheet from './components/googlesheet';
+import Googlesheet from './components/Googlesheet';
 
 //firebase config
 const firebaseConfig= {
