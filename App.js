@@ -11,6 +11,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { NavigationContainer } from "@react-navigation/native";
 import Home from "./components/Home";
+import Loginscreen from "./components/LoginScreen";
 
 //firebase config
 const firebaseConfig = {
@@ -23,11 +24,11 @@ const firebaseConfig = {
   measurementId: "G-TNMGLQYM5E",
 };
 
-if (!firebase.app) {
-  firebase.initializeApp(firebaseConfig);
-} else {
-  firebase.app();
-}
+// if (!firebase.app) {
+firebase.initializeApp(firebaseConfig);
+// } else {
+//   firebase.app();
+// }
 // firebase.analytics();
 var db = firebase.firestore();
 
@@ -36,74 +37,28 @@ db.collection("user-creds")
   .get()
   .then((querySnapshot) => {
     querySnapshot.forEach((doc) => {
+      // console.log(doc.data().keys.tostring());
       console.log(`${doc.id} => ${doc.data().UserId}`);
     });
   });
 
-function Loginscreen({ navigation }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+db.collection("user-creds")
+  .doc("users")
+  .set({
+    UserId: "as@gmail.com",
+    geo: [23.59, 53.24],
+    password: "asdf",
+    timestamp: Date.now(),
+  })
+  .then(() => {
+    console.log("Document successfully written!");
+  })
+  .catch((error) => {
+    console.error("Error writing document: ", error);
+  });
 
-  signUp = (email, password) => {
-    try {
-      if (password.length < 6) {
-        Alert.alert("Please enter atleast 8 characters");
-        return;
-      }
-      firebase.auth().createUserWithEmailAndPassword(email, password);
-      console.log("successfully signed up");
-      navigation.navigate("Details");
-      // Alert.alert("sign up successfull")
-    } catch (error) {
-      console.log(error.toString);
-    }
-  };
-
-  login = (email, password) => {
-    try {
-      firebase
-        .auth()
-        .signInWithEmailAndPassword(email, password)
-        .then(function (user) {
-          console.log("successfully logged in");
-          navigation.navigate("Home");
-          // return <Redirect to="googlesheet" />;
-          // console.log(user)
-          // if(user.length ==1){
-          //   Alert.alert("login")
-          // }
-        });
-    } catch (error) {
-      console.log(error.toString);
-    }
-  };
-
-  return (
-    <View style={styles.container}>
-      <StatusBar style={styles.Statusbar} />
-      <Header title="to do app" />
-      {/* <Text>Hi vignesh</Text> */}
-      <View style={styles.Login}>
-        <TextInput
-          style={styles.Textbox}
-          placeholder="Enter your Email"
-          onChangeText={(email) => setEmail(email)}
-        ></TextInput>
-        <TextInput
-          style={styles.Textbox}
-          placeholder="password"
-          onChangeText={(password) => setPassword(password)}
-        ></TextInput>
-        <View style={styles.ButtonLogin}>
-          <Button title="Login" onPress={() => login(email, password)}></Button>
-          <Button
-            title="Sign Up"
-            onPress={() => signUp(email, password)}
-          ></Button>
-        </View>
-      </View>
-    </View>
-  );
+function Login({ route, navigation }) {
+  return <Loginscreen navigation={navigation} firebase={firebase} />;
 }
 
 function HomeScreen({ navigation }) {
@@ -122,7 +77,7 @@ function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="Loginscreen" component={Loginscreen} />
+        <Stack.Screen name="Loginscreen" component={Login} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Details" component={DetailsScreen} />
       </Stack.Navigator>
